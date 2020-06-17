@@ -16,6 +16,8 @@ import com.lwl.contactbook.domain.Contact;
 import com.lwl.contactbook.dto.AddressDTO;
 import com.lwl.contactbook.dto.ContactDTO;
 import com.lwl.contactbook.dto.ContactWithAddressDTO;
+import com.lwl.contactbook.service.exceptions.ContactAlreadyExistsException;
+import com.lwl.contactbook.service.exceptions.ContactNotFoundException;
 
 @Service
 
@@ -31,7 +33,12 @@ public class ContactBookServiceImpl implements ContactBookService {
 
 	@Override
 	public List<ContactWithAddressDTO> getAllContacts() {
-		return contactDao.getAllContacts();
+		List<ContactWithAddressDTO> contactWithAddressDTO=contactDao.getAllContacts();
+		if(contactWithAddressDTO==null||contactWithAddressDTO.size()==0) {
+			log.info("Contact list is empty or size");
+			throw new ContactNotFoundException("Contacts not yet added");
+		}
+		return contactWithAddressDTO;
 	}
 
 	@Override
@@ -45,6 +52,13 @@ public class ContactBookServiceImpl implements ContactBookService {
 		Assert.notNull(contactDto, "Contact object can't be null");
 		Assert.notNull(contactDto.getName(), "Contact name can't be null or empty");
 		Assert.notNull(contactDto.getMobile(), "Contact mobile can't be null or empty");
+
+		String name = contactDao.findByMobile(contactDto.getMobile());
+		if (name != null) {
+			throw new ContactAlreadyExistsException(
+					String.format("Contact with mobile: %s and user name: %s", contactDto.getMobile(), name));
+		}
+
 		Contact contact = modelMapper.map(contactDto, Contact.class);
 		contact = contactDao.addContact(contact);
 		if (contact != null) {
@@ -59,7 +73,12 @@ public class ContactBookServiceImpl implements ContactBookService {
 	@Override
 	public boolean deleteContact(int cid) {
 		Assert.notNull(cid, "Cid can't be null");
+		Contact contact = contactDao.getContact(cid);
+		if (contact == null) {
+			throw new ContactNotFoundException(String.format("Contact is not found for the given id: %s", cid));
+		}
 		boolean delete = contactDao.deleteContact(cid);
+		log.info("Contact with id {} is deleted sucessfully", cid);
 		return delete;
 	}
 

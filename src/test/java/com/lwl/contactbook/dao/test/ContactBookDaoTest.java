@@ -134,12 +134,14 @@ public class ContactBookDaoTest {
 
 	}
 
-//	@Test
-//	public void search() {
-//		List<ContactWithAddressDTO> actual = contactDao.search("hyd");
-//		System.out.println(actual.get(0).getCity());
-//		assertEquals(2, actual.size());
-//	}
+	@Test
+	public void search() {
+		System.out.println("In Search");
+		List<ContactWithAddressDTO> actual = contactDao.search("hyd");
+		actual.stream().forEach(e->System.out.println(e.getCid()));
+		System.out.println(actual.get(0).getCity());
+		assertEquals(2, actual.size());
+	}
 
 //	@Test
 //	public void searchByCity() {

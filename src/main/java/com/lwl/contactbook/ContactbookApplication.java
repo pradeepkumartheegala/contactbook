@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
-//@ImportResource("classpath:app-config.xml")
 public class ContactbookApplication implements CommandLineRunner {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;

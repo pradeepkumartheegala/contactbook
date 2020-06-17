@@ -28,4 +28,6 @@ public interface ContactBookDao {
 	public Address updateAddress(Address adddress);
 
 	public Address getAddress(int aid);
+
+	public String findByMobile(String mobile);
 }

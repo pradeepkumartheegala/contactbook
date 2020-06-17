@@ -3,8 +3,12 @@ package com.lwl.contactbook.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,8 +18,8 @@ import com.lwl.contactbook.dto.ContactWithAddressDTO;
 import com.lwl.contactbook.service.ContactBookServiceImpl;
 
 @RestController
-@RequestMapping("v1/cbook/")
-public class Maincontroller {
+@RequestMapping("api/v1/cbook/")
+public class ContactBookController {
 
 	@Autowired
 	ContactBookServiceImpl contactBookServiceImpl;
@@ -25,23 +29,23 @@ public class Maincontroller {
 		return contactBookServiceImpl.getAllContacts();
 	}
 
-	@GetMapping("getaddress")
-	public AddressDTO getAddress(int aid) {
+	@GetMapping("address/{aid}")
+	public AddressDTO getAddress(@PathVariable("aid") int aid) {
 		return contactBookServiceImpl.getAddress(aid);
 	}
 
-	@GetMapping("getcontact")
-	public ContactDTO getContact(int cid) {
+	@GetMapping("contact/{cid}")
+	public ContactDTO getContact(@PathVariable("cid") int cid) {
 		return contactBookServiceImpl.getContact(cid);
 	}
 
-	@PutMapping("newaddress")
-	public AddressDTO addAddress(AddressDTO addressDTO) {
+	@PostMapping("newaddress")
+	public AddressDTO addAddress(@RequestBody AddressDTO addressDTO) {
 		return contactBookServiceImpl.addAddress(addressDTO);
 	}
 
-	@PutMapping("newcontact")
-	public ContactDTO addContact(ContactDTO contactDTO) {
+	@PostMapping("newcontact")
+	public ContactDTO addContact(@RequestBody ContactDTO contactDTO) {
 		return contactBookServiceImpl.addContact(contactDTO);
 	}
 
@@ -55,4 +59,8 @@ public class Maincontroller {
 		return contactBookServiceImpl.updateContact(contactDTO);
 	}
 
+	@DeleteMapping("delete/{cid}")
+	public Boolean deleteContact(@PathVariable("cid") int cid) {
+		return contactBookServiceImpl.deleteContact(cid);
+	}
 }
