@@ -2,19 +2,12 @@ package com.lwl.contactbook.service.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.ScriptException;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import com.lwl.contactbook.dto.AddressDTO;
 import com.lwl.contactbook.dto.ContactDTO;
@@ -26,102 +19,78 @@ public class ContactBookServiceTest {
 
 	@Autowired
 	private ContactBookServiceImpl contactBookService;
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	private static final String script = "data.sql";
-	private static final String delete = "delete.sql";
 
 	@BeforeEach
 	public void before() {
-		try {
-			Connection con = jdbcTemplate.getDataSource().getConnection();
-			ScriptUtils.executeSqlScript(con, new ClassPathResource(script));
-			con.close();
-		} catch (ScriptException | SQLException e) {
-			e.printStackTrace();
-		}
+		contactBookService.addContact(new ContactDTO(1, "pradeep", "pradeep@gmail.com", "1234", null));
+		contactBookService.addContact(new ContactDTO(2, "praveen", "praveen@gmail.com", "1234567890", null));
+
+		contactBookService.addAddress(new AddressDTO(1, "Hyd", "TS"), 1);
 	}
-
-	@AfterEach
-	public void after() {
-		try {
-			Connection con = jdbcTemplate.getDataSource().getConnection();
-
-			ScriptUtils.executeSqlScript(con, new ClassPathResource(delete));
-
-			con.close();
-		} catch (ScriptException | SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	@Test
 	public void getAllContacts() {
 		List<ContactWithAddressDTO> actual = contactBookService.getAllContacts();
-		assertEquals("Pradeep", actual.get(0).getName());
-		System.out.println("Done getAllContacts");
+		assertEquals("pradeep", actual.get(0).getName());
 	}
-//		public List<ContactWithAddressDTO> search(String str);
+
+	@Test
+	public void search() {
+		List<AddressDTO> actual = contactBookService.searchByCity("Hyd");
+		assertEquals(1, actual.size());
+	}
 
 	@Test
 	public void addContact() {
-		ContactDTO expected = new ContactDTO(6, "pradeep", "pradeep@gmail.com", "353747646446");
+		ContactDTO expected = new ContactDTO(3, "santhosh", "santhosh@gmail.com", "94877565", null);
 		ContactDTO actual = contactBookService.addContact(expected);
 		assertEquals(expected.getName(), actual.getName());
-		System.out.println("Done addContact");
 	}
 
 	@Test
 	public void deleteContact() {
 		boolean actual = contactBookService.deleteContact(1);
 		assertEquals(true, actual);
-		System.out.println("Done deleteContact");
 	}
 
 	@Test
 	public void updateContact() {
-		ContactDTO expected = new ContactDTO(6, "pradeep", "pradeep@gmail.com", "353747646446");
+		ContactDTO expected = new ContactDTO(1, "santhosh", "santhosh@gmail.com", "94877565", null);
 		ContactDTO actual = contactBookService.updateContact(expected);
 		assertEquals(expected.getName(), actual.getName());
-		System.out.println("Done addContact");
-
 	}
 
 	@Test
 	public void getContact() {
-		ContactDTO actual = contactBookService.getContact(1);
-		assertEquals("Pradeep", actual.getName());
-		System.out.println("Done addContact");
-
+		ContactDTO actual = contactBookService.getContact(2);
+		assertEquals("praveen", actual.getName());
 	}
 
 	public void addAddress() {
-		AddressDTO expected = new AddressDTO(6, "Kansas", "KS", 2);
-		AddressDTO actual = contactBookService.addAddress(expected);
+		AddressDTO expected = new AddressDTO(2, "Kansas", "KS");
+		AddressDTO actual = contactBookService.addAddress(expected, 2);
 		assertEquals(expected, actual);
-		System.out.println("Done addAddress");
 	}
-//		public List<AddressDTO> searchByCity(String str);
 
-//	public void deleteAddress() {
-//		boolean actual = contactBookService.deleteAddress(1);
-//		assertEquals(true, actual);
-//		System.out.println("Done deleteAddress");
-//	}
+	public void searchByCity(String str) {
+		List<AddressDTO> actual = contactBookService.searchByCity("Hyd");
+		assertEquals(1, actual.size());
+	}
+
+	public void deleteAddress() {
+		boolean actual = contactBookService.deleteAddress(1);
+		assertEquals(true, actual);
+	}
 
 	public void updateAddress() {
-		AddressDTO expected = new AddressDTO(6, "Kansas", "KS", 2);
+		AddressDTO expected = new AddressDTO(1, "Kansas", "KS");
 		AddressDTO actual = contactBookService.updateAddress(expected);
 		assertEquals(expected, actual);
-		System.out.println("Done updateAddress");
 	}
 
 	public void getAddress() {
 		ContactDTO actual = contactBookService.getContact(1);
 		assertEquals("Pradeep", actual.getName());
-		System.out.println("Done getAddress");
 	}
 
 }

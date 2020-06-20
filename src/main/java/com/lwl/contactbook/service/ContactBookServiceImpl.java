@@ -16,8 +16,6 @@ import com.lwl.contactbook.domain.Contact;
 import com.lwl.contactbook.dto.AddressDTO;
 import com.lwl.contactbook.dto.ContactDTO;
 import com.lwl.contactbook.dto.ContactWithAddressDTO;
-import com.lwl.contactbook.service.exceptions.ContactAlreadyExistsException;
-import com.lwl.contactbook.service.exceptions.ContactNotFoundException;
 
 @Service
 
@@ -33,12 +31,7 @@ public class ContactBookServiceImpl implements ContactBookService {
 
 	@Override
 	public List<ContactWithAddressDTO> getAllContacts() {
-		List<ContactWithAddressDTO> contactWithAddressDTO=contactDao.getAllContacts();
-		if(contactWithAddressDTO==null||contactWithAddressDTO.size()==0) {
-			log.info("Contact list is empty or size");
-			throw new ContactNotFoundException("Contacts not yet added");
-		}
-		return contactWithAddressDTO;
+		return contactDao.getAllContacts();
 	}
 
 	@Override
@@ -52,13 +45,6 @@ public class ContactBookServiceImpl implements ContactBookService {
 		Assert.notNull(contactDto, "Contact object can't be null");
 		Assert.notNull(contactDto.getName(), "Contact name can't be null or empty");
 		Assert.notNull(contactDto.getMobile(), "Contact mobile can't be null or empty");
-
-		String name = contactDao.findByMobile(contactDto.getMobile());
-		if (name != null) {
-			throw new ContactAlreadyExistsException(
-					String.format("Contact with mobile: %s and user name: %s", contactDto.getMobile(), name));
-		}
-
 		Contact contact = modelMapper.map(contactDto, Contact.class);
 		contact = contactDao.addContact(contact);
 		if (contact != null) {
@@ -73,12 +59,7 @@ public class ContactBookServiceImpl implements ContactBookService {
 	@Override
 	public boolean deleteContact(int cid) {
 		Assert.notNull(cid, "Cid can't be null");
-		Contact contact = contactDao.getContact(cid);
-		if (contact == null) {
-			throw new ContactNotFoundException(String.format("Contact is not found for the given id: %s", cid));
-		}
 		boolean delete = contactDao.deleteContact(cid);
-		log.info("Contact with id {} is deleted sucessfully", cid);
 		return delete;
 	}
 
@@ -113,14 +94,14 @@ public class ContactBookServiceImpl implements ContactBookService {
 	}
 
 	@Override
-	public AddressDTO addAddress(AddressDTO addressDto) {
+	public AddressDTO addAddress(AddressDTO addressDto, int cid) {
 		Assert.notNull(addressDto, "Contact object can't be null");
 		Assert.notNull(addressDto.getCity(), "City can't be null or empty");
 		Assert.notNull(addressDto.getState(), "State can't be null or empty");
 		Address address = modelMapper.map(addressDto, Address.class);
-		address = contactDao.addAddress(address);
+		address = contactDao.addAddress(address, cid);
 		if (address != null) {
-			log.info("Address is added with id:{}", address.getCid());
+
 			addressDto = modelMapper.map(address, AddressDTO.class);
 		} else {
 			log.error("When user trying to add contact, It Couldn't be add");
@@ -152,7 +133,6 @@ public class ContactBookServiceImpl implements ContactBookService {
 		Address address = modelMapper.map(addressDto, Address.class);
 		address = contactDao.updateAddress(address);
 		if (address != null) {
-			log.info("Address is added with id:{}", address.getCid());
 			addressDto = modelMapper.map(address, AddressDTO.class);
 		} else {
 			log.error("When user trying to add contact, It Couldn't be add");

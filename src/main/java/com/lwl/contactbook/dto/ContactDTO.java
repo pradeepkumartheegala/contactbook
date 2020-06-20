@@ -1,5 +1,7 @@
 package com.lwl.contactbook.dto;
 
+import com.lwl.contactbook.domain.Address;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +20,5 @@ public class ContactDTO {
 	private String name;
 	private String email;
 	private String mobile;
+	private Address address;
 }

@@ -7,6 +7,7 @@ import com.lwl.contactbook.domain.Contact;
 import com.lwl.contactbook.dto.ContactWithAddressDTO;
 
 public interface ContactBookDao {
+
 	public List<ContactWithAddressDTO> getAllContacts();
 
 	public List<ContactWithAddressDTO> search(String str);
@@ -19,7 +20,7 @@ public interface ContactBookDao {
 
 	public Contact getContact(int cid);
 
-	public Address addAddress(Address address);
+	public Address addAddress(Address address, int cid);
 
 	public List<Address> searchByCity(String str);
 

@@ -2,19 +2,12 @@ package com.lwl.contactbook.dao.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.ScriptException;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import com.lwl.contactbook.dao.ContactBookDaoImpl;
 import com.lwl.contactbook.domain.Address;
@@ -27,125 +20,90 @@ public class ContactBookDaoTest {
 	@Autowired
 	private ContactBookDaoImpl contactDao;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	private static final String script = "data.sql";
-	private static final String delete = "delete.sql";
-
 	@BeforeEach
 	public void before() {
-		try {
-			Connection con = jdbcTemplate.getDataSource().getConnection();
-			ScriptUtils.executeSqlScript(con, new ClassPathResource(script));
-			con.close();
-		} catch (ScriptException | SQLException e) {
-			e.printStackTrace();
-		}
-	}
+		contactDao.addContact(new Contact(1, "pradeep", "pradeep@gmail.com", "1234",null));
+		contactDao.addContact(new Contact(2, "praveen", "praveen@gmail.com", "1234567890",null));
 
-	@AfterEach
-	public void after() {
-		try {
-			Connection con = jdbcTemplate.getDataSource().getConnection();
-
-			ScriptUtils.executeSqlScript(con, new ClassPathResource(delete));
-
-			con.close();
-		} catch (ScriptException | SQLException e) {
-			e.printStackTrace();
-		}
+		contactDao.addAddress(new Address(1, "Hyd", "TS"), 1);
 	}
 
 	@Test
 	public void getAllContacts() {
 		List<ContactWithAddressDTO> actual = contactDao.getAllContacts();
-		assertEquals("Pradeep", actual.get(0).getName());
-		System.out.println("Done GetAllContacts");
+		System.out.println(actual);
+		assertEquals("pradeep", actual.get(0).getName());
 
 	}
 
 	@Test
 	public void addContact() {
-		Contact expected = new Contact(6, "pradeep", "pradeep@gmail.com", "353747646446");
+		Contact expected = new Contact(3, "prdp", "prdp@gmail.com", "123456789",null);
 		Contact actual = contactDao.addContact(expected);
-		assertEquals(expected, actual);
-		System.out.println("Done addContact");
-
+		assertEquals(expected.getCid(), actual.getCid());
+		assertEquals(expected.getEmail(), actual.getEmail());
+		assertEquals(expected.getName(), actual.getName());
 	}
 
 	@Test
 	public void deleteContact() {
 		boolean actual = contactDao.deleteContact(1);
 		assertEquals(true, actual);
-		System.out.println("Done deleteContact");
-
 	}
 
 	@Test
 	public void updateContact() {
-		Contact expected = new Contact(1, "Pradeep T", "pradeep@gmail.com", "353747646446");
+		Contact expected = new Contact(1, "praveen", "praveen@gmail.com", "1234567",null);
 		Contact actual = contactDao.updateContact(expected);
-		assertEquals(expected, actual);
-		System.out.println("Done updateContacts");
+		assertEquals(expected.getName(), actual.getName());
 
 	}
 
 	@Test
 	public void getContact() {
 		Contact actual = contactDao.getContact(1);
-		assertEquals("Pradeep", actual.getName());
-		assertEquals("pradeep@gmail.com", actual.getEmail());
-		System.out.println("Done getContacts");
-
+		assertEquals("praveen", actual.getName());
 	}
 
 	@Test
 	public void addAddress() {
-		Address expected = new Address(6, "Kansas", "KS", 2);
-		Address actual = contactDao.addAddress(expected);
-		assertEquals(expected, actual);
-		System.out.println("Done addAddress");
-
+		Address expected = new Address(2, "Kmm", "TS");
+		Address actual = contactDao.addAddress(expected,2);
+		assertEquals(expected.getAid(), actual.getAid());
 	}
 
 	@Test
 	public void deleteAddress() {
 		boolean actual = contactDao.deleteAddress(1);
 		assertEquals(true, actual);
-		System.out.println("Done deleteAddress");
 
 	}
 
 	@Test
 	public void updateAddress() {
-		Address expected = new Address(1, "Kansas", "KS", 2);
+		Address expected = new Address(2, "Nlg", "TS");
 		Address actual = contactDao.updateAddress(expected);
-		assertEquals(expected, actual);
-		System.out.println("Done UpdateAddress");
+		assertEquals(expected.getAid(), actual.getAid());
 
 	}
 
 	@Test
 	public void getAddress() {
 		Address actual = contactDao.getAddress(1);
-		assertEquals("hyd", actual.getCity());
-		System.out.println("Done getAddress");
+		assertEquals("Hyd", actual.getCity());
 
 	}
 
 	@Test
 	public void search() {
-		System.out.println("In Search");
-		List<ContactWithAddressDTO> actual = contactDao.search("hyd");
-		actual.stream().forEach(e->System.out.println(e.getCid()));
-		System.out.println(actual.get(0).getCity());
-		assertEquals(2, actual.size());
+		List<ContactWithAddressDTO> actual = contactDao.search("Hyd");
+		assertEquals(1, actual.size());
 	}
 
-//	@Test
-//	public void searchByCity() {
-//
-//	}
+	@Test
+	public void searchByCity() {
+		List<Address> actual = contactDao.searchByCity("Hyd");
+		assertEquals(1, actual.size());
+	}
 
 }

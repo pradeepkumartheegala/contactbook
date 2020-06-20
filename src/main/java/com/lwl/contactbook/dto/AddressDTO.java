@@ -17,5 +17,4 @@ public class AddressDTO {
 	private int aid;
 	private String city;
 	private String state;
-	private int cid;
 }

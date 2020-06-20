@@ -18,7 +18,7 @@ import com.lwl.contactbook.dto.ContactWithAddressDTO;
 import com.lwl.contactbook.service.ContactBookServiceImpl;
 
 @RestController
-@RequestMapping("api/v1/cbook/")
+@RequestMapping("/api/v1/cbook/")
 public class ContactBookController {
 
 	@Autowired
@@ -27,6 +27,15 @@ public class ContactBookController {
 	@GetMapping("all")
 	public List<ContactWithAddressDTO> getAll() {
 		return contactBookServiceImpl.getAllContacts();
+	}
+	@GetMapping("search/{city}")
+	public List<ContactWithAddressDTO> search(@PathVariable("city") String city) {
+		return contactBookServiceImpl.search(city);
+	}
+	
+	@GetMapping("searchbycity/{city}")
+	public List<AddressDTO> searchbycity(@PathVariable("city") String city) {
+		return contactBookServiceImpl.searchByCity(city);
 	}
 
 	@GetMapping("address/{aid}")
@@ -39,9 +48,9 @@ public class ContactBookController {
 		return contactBookServiceImpl.getContact(cid);
 	}
 
-	@PostMapping("newaddress")
-	public AddressDTO addAddress(@RequestBody AddressDTO addressDTO) {
-		return contactBookServiceImpl.addAddress(addressDTO);
+	@PostMapping("newaddress/{cid}")
+	public AddressDTO addAddress(@RequestBody AddressDTO addressDTO, @PathVariable("cid") int cid) {
+		return contactBookServiceImpl.addAddress(addressDTO, cid);
 	}
 
 	@PostMapping("newcontact")
@@ -50,17 +59,22 @@ public class ContactBookController {
 	}
 
 	@PutMapping("updateaddress")
-	public AddressDTO updateAddress(AddressDTO addressDTO) {
+	public AddressDTO updateAddress(@RequestBody AddressDTO addressDTO) {
 		return contactBookServiceImpl.updateAddress(addressDTO);
 	}
 
 	@PutMapping("updatecontact")
-	public ContactDTO updateContact(ContactDTO contactDTO) {
+	public ContactDTO updateContact(@RequestBody ContactDTO contactDTO) {
 		return contactBookServiceImpl.updateContact(contactDTO);
 	}
 
-	@DeleteMapping("delete/{cid}")
-	public Boolean deleteContact(@PathVariable("cid") int cid) {
-		return contactBookServiceImpl.deleteContact(cid);
+	@DeleteMapping("removecontact/{cid}")
+	public void deleteContact(@PathVariable("cid") int cid) {
+		contactBookServiceImpl.deleteContact(cid);
+	}
+
+	@DeleteMapping("removeaddress/{aid}")
+	public void deleteAddress(@PathVariable("aid") int aid) {
+		contactBookServiceImpl.deleteAddress(aid);
 	}
 }
