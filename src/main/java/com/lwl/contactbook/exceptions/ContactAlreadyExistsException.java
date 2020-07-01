@@ -1,4 +1,4 @@
-package com.lwl.contactbook.service.exceptions;
+package com.lwl.contactbook.exceptions;
 
 public class ContactAlreadyExistsException extends RuntimeException {
 

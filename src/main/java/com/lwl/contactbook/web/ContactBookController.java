@@ -1,4 +1,4 @@
-package com.lwl.contactbook.controller;
+package com.lwl.contactbook.web;
 
 import java.util.List;
 

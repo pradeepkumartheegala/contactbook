@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 import com.lwl.contactbook.domain.Address;
 import com.lwl.contactbook.domain.Contact;
 import com.lwl.contactbook.dto.ContactWithAddressDTO;
+import com.lwl.contactbook.exceptions.ContactNotFoundException;
 import com.lwl.contactbook.repo.AddressRepo;
 import com.lwl.contactbook.repo.ContactRepo;
-import com.lwl.contactbook.service.exceptions.ContactNotFoundException;
 
 @Repository
 public class ContactBookDaoImpl implements ContactBookDao {
